@@ -20,7 +20,6 @@ def compare_prices() -> None:
   input_args = process_args()
   discount = input_args[0]/100
   prices = input_args[1:]
-  count = 0
 
   original_prices = [prices[i] for i in range(0, len(prices), 2)]
   original_discounts = [prices[i+1] for i in range(0, len(prices), 2)]
