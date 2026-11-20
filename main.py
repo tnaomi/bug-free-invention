@@ -1,6 +1,10 @@
 import sys
 import math
 
+from fastapi import FastAPI
+
+app = FastAPI(title="Testing Helper")
+
 global args #initiate a global var to prevent looping
 
 args = sys.argv[1:]
@@ -16,7 +20,7 @@ def process_args() -> list[float]:
     raise Exception("Prices should be paired: original and discounted")
   return result
 
-def compare_prices() -> None:
+def compare_prices() -> dict[str, str]:
   input_args = process_args()
   discount = input_args[0]/100
   prices = input_args[1:]
@@ -31,5 +35,20 @@ def compare_prices() -> None:
         )
 
   print(result)
+  return result
 
-compare_prices()
+@app.get("/health-check")
+def health_check():
+  return {
+    "msg": "App is healthy"
+    }
+
+@app.get("/")
+async def home():
+  return {
+    'msg': "This is the home page."
+    }
+
+@app.post("/compare")
+async def compare(): 
+  return compare_prices()
