@@ -7,7 +7,7 @@ app = FastAPI(title="Testing Helper")
 app = FastAPI(title="Testing Helper", lifespan=lifespan)
 
 class PriceCheck(BaseModel):
-  id: UUID4
+  id: UUID4 | None
   item_name: str | None = Field(
     default= None, title= "Item name (optional)", max_length= 50
     )
