@@ -2,12 +2,31 @@ import sys
 import math
 
 from fastapi import FastAPI
+from pydantic import UUID4, BaseModel, Field
 
 app = FastAPI(title="Testing Helper")
 
 global args #initiate a global var to prevent looping
 
 args = sys.argv[1:]
+
+class PriceCheck(BaseModel):
+  id: UUID4
+  item_name: str | None = Field(
+    default= None, title= "Item name (optional)", max_length= 50
+    )
+  original_price: float = Field(
+    gt= 0, title= "Original Price", description= "The original price as listed on the website, before discounts."
+    )
+  original_discount: float = Field(
+    ge=0, title= "The discount as listed on the website (the amount to be tested)."
+    )
+  discount_price: float | None = Field(
+    gt=0, title= "The calculated discount (the amount to test).", default= None
+    )
+  discount: float = Field(
+    gt= 0, title= "Listed discount (%)"
+    )
 
 def process_args() -> list[float]:
   try:
