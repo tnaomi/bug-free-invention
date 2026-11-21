@@ -5,40 +5,42 @@ import uuid
 from fastapi import FastAPI
 from pydantic import UUID4, BaseModel, Field
 
-app = FastAPI(title="Testing Helper")
+from .constants import APP_HEALTH_CHECK, DISCOUNT_RATE_API_TITLE, HOME_CONTENT, CALC_DIS_API_TITLE, ITEM_NAME_API_TITLE, OG_DISCOUNT_API_TITLE, OG_PRICE_API_DESC, OG_PRICE_API_TITLE, APP_TITLE
 
-app = FastAPI(title="Testing Helper", lifespan=lifespan)
+#def lifespan(app: FastAPI):
+
+app = FastAPI(title=APP_TITLE)
 
 class PriceCheck(BaseModel):
   id: UUID4 = Field(
     default= uuid.uuid4(), exclude= True 
     )
   item_name: str | None = Field(
-    default= None, title= "Item name (optional)", max_length= 50
+    default= None, title= ITEM_NAME_API_TITLE, max_length= 50
     )
   original_price: float = Field(
-    gt= 0, title= "Original Price", description= "The original price as listed on the website, before discounts."
+    gt= 0, title= OG_PRICE_API_TITLE, description= OG_PRICE_API_DESC
     )
   original_discount: float = Field(
-    ge=0, title= "The discount as listed on the website (the amount to be tested)."
+    ge=0, title= OG_DISCOUNT_API_TITLE
     )
   calculated_discount: float | None = Field(
-    gt=0, title= "The calculated discount (the amount to test).", default= None
+    gt=0, title= CALC_DIS_API_TITLE, default= None
     )
   discount: float = Field(
-    gt= 0, title= "Listed discount (%)"
+    gt= 0, title= DISCOUNT_RATE_API_TITLE
     )
 
 @app.get("/health-check")
 def health_check():
   return {
-    "msg": "App is healthy"
+    "msg": APP_HEALTH_CHECK["success"]
     }
 
 @app.get("/")
 async def home():
   return {
-    'msg': "This is the home page."
+    "msg": HOME_CONTENT
     }
 
 @app.post("/compare/", response_model= PriceCheck)
