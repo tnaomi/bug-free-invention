@@ -7,7 +7,9 @@ app = FastAPI(title="Testing Helper")
 app = FastAPI(title="Testing Helper", lifespan=lifespan)
 
 class PriceCheck(BaseModel):
-  id: UUID4 | None
+  id: UUID4 = Field(
+    default= uuid.uuid4(), exclude= True 
+    )
   item_name: str | None = Field(
     default= None, title= "Item name (optional)", max_length= 50
     )
@@ -17,7 +19,7 @@ class PriceCheck(BaseModel):
   original_discount: float = Field(
     ge=0, title= "The discount as listed on the website (the amount to be tested)."
     )
-  discount_price: float | None = Field(
+  calculated_discount: float | None = Field(
     gt=0, title= "The calculated discount (the amount to test).", default= None
     )
   discount: float = Field(
