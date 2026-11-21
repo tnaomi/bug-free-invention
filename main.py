@@ -1,4 +1,7 @@
 
+import math
+import uuid
+
 from fastapi import FastAPI
 from pydantic import UUID4, BaseModel, Field
 
@@ -38,6 +41,17 @@ async def home():
     'msg': "This is the home page."
     }
 
-@app.post("/compare")
-async def compare(): 
-  return compare_prices()
+@app.post("/compare/", response_model= PriceCheck)
+async def process_comparison(data: PriceCheck):
+  data_dict = data.model_dump(mode='json')
+  original_discount: float = data_dict["discount"]
+  original_price = data_dict["original_price"]
+
+  calculated_discount = original_price - round(math.prod([original_discount / 100, original_price]), 3)
+
+  data_dict.update([
+    ("id", uuid.uuid4()),
+    ("calculated_discount", calculated_discount), 
+    ("match", math.isclose(original_discount, calculated_discount))
+    ])
+  return data_dict
