@@ -5,16 +5,19 @@ import uuid
 import redis.asyncio as redis
 from fastapi import FastAPI
 from pydantic import UUID4, BaseModel, Field
+from dotenv import dotenv_values
 
 from .constants import APP_HEALTH_CHECK, DISCOUNT_RATE_API_TITLE, HOME_CONTENT, CALC_DIS_API_TITLE, ITEM_NAME_API_TITLE, OG_DISCOUNT_API_TITLE, OG_PRICE_API_DESC, OG_PRICE_API_TITLE, APP_TITLE
 
+config = dotenv_values(".env")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
   """ Creates a global Redis client from a connnection pool and ties it to Fastapi's startup and teardown handling """
   global r 
 
-  pool= redis.ConnectionPool.from_url("redis://172.17.0.2") # Uses docker connection
+  connection_url: str = config.get("REDIS_CONN_URL", "redis://127.0.0.1") # type: ignore # defaults to local host
+  pool= redis.ConnectionPool.from_url(connection_url)
   r= redis.Redis(decode_responses= True).from_pool(pool)
 
   yield
